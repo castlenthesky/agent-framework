@@ -28,21 +28,21 @@ Due to the alignment between `InvokeAzureResponse` and `InvokeAzureAgent`, a sha
         temperature: 0
     instructions: Be awesome!
     capabilities:
-      codeInterpeter: true      
+      codeInterpeter: true
   input:
     messages: =UserMessage("Hi!")
-    parameters:
+    arguments:
       location: Seattle, WA, USA
       now: =System.CurrentDateTime
+    externalLoop:
+      variable: Local.UserInput
+      when: =!Local.IsComplete
+      maxIterations: 4
   output:
     autoSend: true
     messages: Local.AgentResponse
     responseObject: Local.AgentResponseObject
     structuredOutputs: Local.AgentStructuredOutputs
-  externalLoop:
-    variable: Local.UserInput
-    when: =!Local.IsComplete
-    maxIterations: 4
 ```
 
 Since the `InvokeAzureResponse` action inherits from `InvokeAgentBase`, please refer to the `InvokeAzureAgent` action for details on all other properties.

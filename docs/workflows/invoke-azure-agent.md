@@ -46,15 +46,15 @@ as well as re-adding support for _Response Format_ that is supported in existing
     parameters:
       location: Seattle, WA, USA
       now: =System.CurrentDateTime
+    externalLoop:
+      variable: Local.UserInput
+      when: =!Local.IsComplete
+      maxIterations: 4
   output:
     autoSend: true
     messages: Local.AgentResponse
     responseObject: Local.AgentResponseObject
     structuredOutputs: Local.AgentStructuredOutputs
-  externalLoop:
-    variable: Local.UserInput
-    when: =!Local.IsComplete
-    maxIterations: 4
 ```
 
 Property|Type|Description|Required|Default
@@ -67,15 +67,15 @@ Property|Type|Description|Required|Default
 `input`|`Node`|Defines aspects related to the agent inputs.|Optional
 `input.messages`|`Value`|The messages to send to the agent.|Optional
 `input.parameters`|`CollectionProperty<StructuredInput>`|Structured inputs being provided to the agent.|Optional
+`input.externalLoop`|`Node`|Defines if external input is needed.|Optional
+`input.externalLoop.when`|`BoolExpression`|Expression that evaluates to true when input is needed.|Required
+`input.externalLoop.variable`|`PropertyPath`|The scoped variable to store input.|Optional
+`input.externalLoop.maxIterations`|`IntExpression`|Maximum number of iterations to allow.|Optional|No limit
 `output`|`Node`|Defines aspects related to the agent response/output.|Optional
 `output.autoSend`|`BoolExpression`|Indicates whether to automatically include the agent response as part of the workflow (external) conversation.  If `conversationId` property identifies the workflow conversation, setting this to `false` has no impact.|Optional|
 `output.messages`|`PropertyPath`|The scoped variable to store the agent response messages.|Optional
 `output.responseObject`|`PropertyPath`|The scoped variable to store the structured response object.  Only assigned when for agent with response format of `json_object` or `json_schema`|Optional
 `output.structuredOutputs`|`PropertyPath`|Mapping of structured output parameters from the agent to scoped variables.|Optional
-`externalLoop`|`Node`|Defines if external input is needed.|Optional
-`externalLoop.when`|`BoolExpression`|Expression that evaluates to true when input is needed.|Required
-`externalLoop.variable`|`PropertyPath`|The scoped variable to store input.|Optional
-`externalLoop.maxIterations`|`IntExpression`|Maximum number of iterations to allow.|Optional|No limit
 
 **StructuredInput**:
 
@@ -158,8 +158,9 @@ When `maxIterations` is not specified, no limit is enforced.
   id: invoke_agent_1
   agent:
     name: DemoAgent
-  externalLoop:
-    when: =Local.IntentConfidence < 0.8
+  input:
+    externalLoop:
+      when: =Local.IntentConfidence < 0.8
 ```
 
 #### 5. External Input - Limit Iterations
@@ -171,8 +172,9 @@ Criteria for soliciting input may also be based on the resulting input.
   id: invoke_agent_1
   agent:
     name: DemoAgent
-  externalLoop:
-    variable: Local.UserInput
-    when: =!IsBlank(Find("APPROVED", Upper(Local.UserInput.Text)))
-    maxIterations: =Env.MaximumInputRequests
+  input:
+    externalLoop:
+      variable: Local.UserInput
+      when: =!IsBlank(Find("APPROVED", Upper(Local.UserInput.Text)))
+      maxIterations: =Env.MaximumInputRequests
 ```
